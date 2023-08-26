@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+  </head>
+  <body>
+    <h1>Todo List</h1>
+
+    <form id="addTaskForm">
+      <input
+        type="text"
+        id="taskInput"
+        placeholder="Enter task title"
+        required
+      />
+      <button type="submit">Add Task</button>
+    </form>
+
+    <ul id="taskList"></ul>
+
+    <script>
+      const taskList = document.getElementById("taskList");
+      const addTaskForm = document.getElementById("addTaskForm");
+      const taskInput = document.getElementById("taskInput");
+
+      // Функция для добавления задачи в список
+      function addTask(task) {
+        const li = document.createElement("li");
+        li.innerHTML = `
+        <input type="checkbox" ${task.completed ? "checked" : ""}>
+        <span>${task.title}</span>
+        <button onclick="deleteTask('${task._id}')">Delete</button>
+      `;
+        taskList.appendChild(li);
+      }
+
+      // Функция для удаления задачи из списка
+      function deleteTask(id) {
+        fetch(`/tasks/${id}`, { method: "DELETE" })
+          .then(() => {
+            document.getElementById(id).remove();
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+
+      // Обработчик отправки формы
+      addTaskForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const title = taskInput.value;
+        fetch("/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title }),
+        })
+          .then((response) => response.json())
+          .then((task) => {
+            addTask(task);
+            taskInput.value = "";
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      });
+
+      // Получение списка задач при загрузке страницы
+      fetch("/tasks")
+        .then((response) => response.json())
+        .then((tasks) => {
+          tasks.forEach((task) => {
+            addTask(task);
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    </script>
+  </body>
+</html>
