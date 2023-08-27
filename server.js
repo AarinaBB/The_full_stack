@@ -1,31 +1,43 @@
-//
 const express = require('express');
 const mongoose = require('mongoose');
 
 const app = express();
+const path = require('path');
+const router = express.Router();
 const PORT = process.env.PORT || 3000;
 
 // Подключение к базе данных MongoDB
-mongoose.connect('mongodb://localhost/todo-list', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect('mongodb+srv://ruben:rub54321@cluster0.irc2gdd.mongodb.net/todolistDB', {useNewUrlParser: true});
 
-// Создание модели для задачи
-const Task = mongoose.model('Task', {
+const SomeModelSchema = new mongoose.Schema({
   title: String,
   completed: Boolean,
 });
+
+// Compile model from schema
+const Task = mongoose.model("Task", SomeModelSchema);
+
+// const awesome_instance = new Task({ name: "awesome" });
+
+//  awesome_instance.save();
+// Создание модели для задачи
+// const Task = mongoose.model('Task', {
+//   title: String,
+//   completed: Boolean,
+// });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Получение всех задач
-app.get('/tasks', async (req, res) => {
+app.get('/', async (req, res) => {
   try {
-    const tasks = await Task.find();
-    res.json(tasks);
+    res.sendFile(path.join(__dirname+'/index.html'))
+    // console.log("hhhhhhhh")
+    // const tasks = await Task.find();
+    // res.json(tasks);
   } catch (error) {
+    // console.log("hhhhhhhh")
     res.status(500).json({ error: 'Failed to fetch tasks' });
   }
 });
@@ -65,7 +77,9 @@ app.delete('/tasks/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete task' });
   }
 });
+app.use('/', router);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
