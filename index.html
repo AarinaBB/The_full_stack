@@ -33,6 +33,7 @@
         <span>${task.title}</span>
         <button onclick="deleteTask('${task._id}')">Delete</button>
       `;
+      li.setAttribute("id", task._id);
         taskList.appendChild(li);
       }
 
@@ -40,6 +41,7 @@
       function deleteTask(id) {
         fetch(`/tasks/${id}`, { method: "DELETE" })
           .then(() => {
+            console.log(id);
             document.getElementById(id).remove();
           })
           .catch((error) => {
@@ -67,16 +69,17 @@
       });
 
       // Получение списка задач при загрузке страницы
-      fetch("/tasks")
-        .then((response) => response.json())
-        .then((tasks) => {
-          tasks.forEach((task) => {
-            addTask(task);
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      // fetch("/tasks", {method: "POST"})
+      //   .then((response) => response.json())
+      //   .then((tasks) => {
+      //     console.log(tasks);
+      //     tasks.forEach((task) => {
+      //       addTask(task);
+      //     });
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
     </script>
   </body>
 </html>
